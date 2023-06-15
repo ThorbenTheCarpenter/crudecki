@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './App.css';
 
 function App() {
   const [guests, setGuests] = useState([]);
@@ -121,6 +122,21 @@ function App() {
     }
   }
 
+  function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+      if (editMode) {
+        handleEditItem(editId, inputValue);
+        setEditMode(false);
+        setEditId('');
+        setInputValue('');
+      } else if (inputValue.trim() !== '') {
+        handleAddItem();
+      } else if (!isAdmin && password.trim() !== '') {
+        handleAdminLogin();
+      }
+    }
+  }
+
   return (
     <div className="app">
       <h1>Guest Book</h1>
@@ -129,21 +145,30 @@ function App() {
           type="text"
           value={inputValue}
           onChange={event => setInputValue(event.target.value)}
+          onKeyPress={handleKeyPress}
           placeholder="Enter guest name"
         />
         {isAdmin ? (
           <>
             {editMode ? (
               <>
-                <button onClick={() => handleEditItem(editId, inputValue)}>Save</button>
-                <button onClick={() => setEditMode(false)}>Cancel</button>
+                <button className="edit-button" onClick={() => handleEditItem(editId, inputValue)}>
+                  Save
+                </button>
+                <button className="cancel-button" onClick={() => setEditMode(false)}>
+                  Cancel
+                </button>
               </>
             ) : (
-              <button onClick={handleAddItem}>Add</button>
+              <button className="add-button" onClick={handleAddItem}>
+                Add
+              </button>
             )}
           </>
         ) : (
-          <button disabled>Add</button>
+          <button className="add-button" disabled>
+            Add
+          </button>
         )}
       </div>
       {loading ? (
@@ -177,9 +202,11 @@ function App() {
         </ul>
       )}
       {!isAdmin && (
-        <div>
-          <input type="password" value={password} onChange={event => setPassword(event.target.value)} />
-          <button onClick={handleAdminLogin}>Login as Admin</button>
+        <div className="admin-login">
+          <input type="password" value={password} onChange={event => setPassword(event.target.value)} onKeyPress={handleKeyPress} placeholder="Admin Password" />
+          <button className="admin-button" onClick={handleAdminLogin}>
+            Login as Admin
+          </button>
         </div>
       )}
     </div>
